@@ -21,6 +21,7 @@ Shader water;
 
 Model *plane;
 Model *gun, *balloon1, *balloon2, *balloon3, *balloon4, *balloon5;
+Model *stall;
 Model *structure, *pole;
 Model *rnd;
 Model *banner;
@@ -136,6 +137,11 @@ void display(void) {
 	//right roof
 	structure->render(view * glm::translate(-8.0f, 3.75f, 9.0f) * glm::scale(0.7f, 0.2f, 9.0f), projection, false);
 
+	//left stall
+	stall->render(view * glm::translate(14.5f, -5.5f, 6.0f) * glm::scale(60.0f, 65.0f, 135.0f), projection, true);
+	//right stall
+	stall->render(view * glm::translate(-14.5f, -5.5f, 6.0f) * glm::scale(60.0f, 65.0f, 135.0f), projection, true);
+
 	gun->render(glm::translate(0.75f,-1.0f,-2.0f)* glm::scale(.05f, .05f, .05f) *glm::rotate(-180.0f,0.0f,1.0f,0.0f) , projection, true);
 	
 	b1->updatePos(0.0025f);
@@ -245,6 +251,8 @@ int main(int argc, char** argv) {
 	balloon5 = new Model(&shader, "models/Balloon.obj", "models/");
 
 	rnd = new Model(&shader, "models/shpere.obj", "models/");
+
+	stall = new Model(&shader, "models/stall.obj", "models/");
 
 	plane = new Model(&shader,"models/plane.obj",  "models/");
 	banner = new Model(&water, "models/planehires.obj");
