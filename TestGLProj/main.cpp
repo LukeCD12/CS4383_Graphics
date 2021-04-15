@@ -17,11 +17,13 @@
 #include <string.h>
 
 Shader shader;
+Shader water;
 
 Model *plane;
 Model *gun, *balloon1, *balloon2, *balloon3, *balloon4, *balloon5;
 Model *structure, *pole;
 Model *rnd;
+Model *banner;
 
 std::vector<Balloon *> balloons;
 Balloon *b1, *b2, *b3, *b4, *b5;
@@ -34,7 +36,8 @@ glm::vec3 pewDir;
 glm::mat4 pewModel;
 
 float rotation = 0.0f;
-
+float mtime = 0.0f;
+float lastTime = 0.0f;
 bool shoot = false;
 
 QuatCamera *camera;
@@ -48,6 +51,7 @@ void checkError(const char *functionName) {
 }
 
 void initShader(void) {
+	water.InitializeFromFile("shaders/water.vert", "shaders/water.frag");
 	shader.InitializeFromFile("shaders/phong3.vert", "shaders/phong3.frag");
 	checkError("initShader");
 }
@@ -81,7 +85,7 @@ void init(void)  {
 	balloons.push_back(b5);
 
 	initShader();
-	initRendering ();
+	initRendering();
 }
 
 void dumpInfo(void) {
@@ -93,14 +97,12 @@ void dumpInfo(void) {
 }
 
 void display(void) {
-	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	camera->OnRender();
 
 	view = glm::lookAt(camera->GetPos(), camera->GetLookAtPoint(), camera->GetUp());
 	
-	// rotation += 0.05f; // Update rotation angle if rotation is enabled.
-	
-	 glm::vec4 lightPos = glm::rotate(rotation,0.0f, 0.0f, 1.0f) * lightPosition;
+	glm::vec4 lightPos = glm::rotate(rotation,0.0f, 0.0f, 1.0f) * lightPosition;
 	
 	shader.Activate(); // Bind shader.
 	shader.SetUniform("lightPosition", view * lightPos);
@@ -108,6 +110,12 @@ void display(void) {
 	shader.SetUniform("lightSpecular", glm::vec4(1.0, 1.0, 1.0, 1.0));
 	shader.SetUniform("lightAmbient", glm::vec4(1.0, 1.0, 1.0, 1.0));
 	shader.SetUniform("linearAttenuationCoefficient", 0.3f);
+
+	water.Activate();
+	water.SetUniform("time", mtime);
+
+	//front banner
+	banner->render(view * glm::translate(0.0f, 3.0f, -0.8f) * glm::rotate(90.0f, 1.0f, 0.0f, 0.0f) * glm::scale(7.0f, 1.0f, 1.0f), projection, false);
 
 	//left front post
 	pole->render(view * glm::translate(8.0f, -3.0f, 0.0f) * glm::scale(1.0f, 7.0f, 1.0f), projection, false);
@@ -153,10 +161,16 @@ void display(void) {
 	plane->render(view * glm::translate(0.0f, -6.0f, 0.0f) * glm::scale(20.0f, 20.0f, 20.0f), projection, false);
 
 	glutSwapBuffers(); // Swap the buffers.
-	checkError ("display");
+	checkError("display");
 }
 
 void idle() {
+	float currTime = glutGet(GLUT_ELAPSED_TIME);
+	if (currTime - lastTime > 1.0f) {
+		mtime = currTime;
+		lastTime = currTime;
+	}
+	glFlush();
 	glutPostRedisplay();
 }
 
@@ -233,6 +247,7 @@ int main(int argc, char** argv) {
 	rnd = new Model(&shader, "models/shpere.obj", "models/");
 
 	plane = new Model(&shader,"models/plane.obj",  "models/");
+	banner = new Model(&water, "models/planehires.obj");
 	gun = new Model(&shader,"models/pistola.obj", "models/");
 
 	structure = new Model(&shader, "models/cubeaxisaligned.obj", "models/");
