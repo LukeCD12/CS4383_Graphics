@@ -20,14 +20,14 @@ Shader shader;
 Shader water;
 
 Model *plane;
-Model *gun, *balloon1, *balloon2, *balloon3, *balloon4, *balloon5;
+Model *gun, *balloon1, *balloon2, *balloon3, *balloon4, *balloon5, * balloon6, * balloon7, * balloon8, * balloon9, * balloon10;
 Model *stall;
 Model *structure, *pole;
 Model *rnd;
 Model *banner;
 
 std::vector<Balloon *> balloons;
-Balloon *b1, *b2, *b3, *b4, *b5;
+Balloon *b1, *b2, *b3, *b4, *b5, *b6, *b7, *b8, *b9, *b10;
 
 glm::mat4 projection;
 glm::mat4 view;
@@ -41,6 +41,7 @@ float mtime = 0.0f;
 float lastTime = 0.0f;
 bool shoot = false;
 int score = 0;
+int difficulty = 0;
 
 QuatCamera *camera;
 
@@ -102,10 +103,32 @@ void display(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//output score to screen
-	unsigned char str[] = "Score: 9999999999999";
-	sprintf((char *)str, "Score: %d", score);
-	glRasterPos2f(-1.0f, -1.0f);
-	for (unsigned char* c = str; *c != '\0'; c++) {
+	unsigned char scoreStr[] = "Score: 9999999999999";
+	sprintf((char *)scoreStr, "Score: %d", score);
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glRasterPos2f(0.6f, 0.85f);
+	for (unsigned char* c = scoreStr; *c != '\0'; c++) {
+		glutBitmapCharacter(GLUT_BITMAP_8_BY_13, *c);
+	}
+
+	//output difficulty to screen
+	unsigned char difficultyStr[] = "Difficulty: Medium";
+	switch (difficulty) {
+		case 0:
+			glColor3f(0.0f, 1.0f, 0.0f);
+			sprintf((char*)difficultyStr, "Difficulty: Easy");
+			break;
+		case 1:
+			glColor3f(1.0f, 1.0f, 0.0f);
+			sprintf((char*)difficultyStr, "Difficulty: Medium");
+			break;
+		case 2:
+			sprintf((char*)difficultyStr, "Difficulty: Hard");
+			glColor3f(1.0f, 0.0f, 0.0f);
+			break;
+	}
+	glRasterPos2f(0.6f, 0.9f);
+	for (unsigned char* c = difficultyStr; *c != '\0'; c++) {
 		glutBitmapCharacter(GLUT_BITMAP_8_BY_13, *c);
 	}
 
@@ -155,20 +178,39 @@ void display(void) {
 
 	gun->render(glm::translate(0.75f,-1.0f,-2.0f)* glm::scale(.05f, .05f, .05f) *glm::rotate(-180.0f,0.0f,1.0f,0.0f) , projection, true);
 	
-	b1->updatePos(0.0025f);
+	b1->updatePos(0.0025f, difficulty);
 	balloon1->render(view * glm::translate(b1->pos) * glm::scale(b1->size, b1->size, b1->size), projection, true);
 
-	b2->updatePos(0.0025f);
+	b2->updatePos(0.0025f, difficulty);
 	balloon2->render(view * glm::translate(b2->pos) * glm::scale(b2->size, b2->size, b2->size), projection, true);
 
-	b3->updatePos(0.0025f);
+	b3->updatePos(0.0025f, difficulty);
 	balloon3->render(view * glm::translate(b3->pos) * glm::scale(b3->size, b3->size, b3->size), projection, true);
 
-	b4->updatePos(0.0025f);
+	b4->updatePos(0.0025f, difficulty);
 	balloon4->render(view * glm::translate(b4->pos) * glm::scale(b4->size, b4->size, b4->size), projection, true);
 
-	b5->updatePos(0.0025f);
+	b5->updatePos(0.0025f, difficulty);
 	balloon5->render(view * glm::translate(b5->pos) * glm::scale(b5->size, b5->size, b5->size), projection, true);
+
+	if (difficulty >= 1) {
+		b6->updatePos(0.0025f, difficulty);
+		balloon6->render(view * glm::translate(b6->pos) * glm::scale(b6->size, b6->size, b6->size), projection, true);
+
+		b7->updatePos(0.0025f, difficulty);
+		balloon7->render(view * glm::translate(b7->pos) * glm::scale(b7->size, b7->size, b7->size), projection, true);
+	}
+
+	if (difficulty >= 2) {
+		b8->updatePos(0.0025f, difficulty);
+		balloon8->render(view * glm::translate(b8->pos) * glm::scale(b8->size, b8->size, b8->size), projection, true);
+
+		b9->updatePos(0.0025f, difficulty);
+		balloon9->render(view * glm::translate(b9->pos) * glm::scale(b9->size, b9->size, b9->size), projection, true);
+
+		b10->updatePos(0.0025f, difficulty);
+		balloon10->render(view* glm::translate(b10->pos)* glm::scale(b10->size, b10->size, b10->size), projection, true);
+	}
 
 	plane->setOverrideDiffuseMaterial(glm::vec4(1.0, 0.0, 0.0, 1.0));
 	plane->setOverrideAmbientMaterial(glm::vec4(0.2 , 0.0, 0.0, 1.0));
@@ -183,6 +225,23 @@ void display(void) {
 
 void idle() {
 	float currTime = glutGet(GLUT_ELAPSED_TIME);
+	int sec = (int)currTime / 1000;
+	if (sec == 60) {
+		difficulty = 1;
+		b6 = new Balloon();
+		b7 = new Balloon();
+		balloons.push_back(b6);
+		balloons.push_back(b7);
+	}
+	else if (sec == 120) {
+		difficulty = 2;
+		b8 = new Balloon();
+		b9 = new Balloon();
+		b10 = new Balloon();
+		balloons.push_back(b8);
+		balloons.push_back(b9);
+		balloons.push_back(b10);
+	}
 	if (currTime - lastTime > 1.0f) {
 		mtime = currTime;
 		lastTime = currTime;
@@ -261,6 +320,11 @@ int main(int argc, char** argv) {
 	balloon3 = new Model(&shader, "models/Balloon.obj", "models/");
 	balloon4 = new Model(&shader, "models/Balloon.obj", "models/");
 	balloon5 = new Model(&shader, "models/Balloon.obj", "models/");
+	balloon6 = new Model(&shader, "models/Balloon.obj", "models/");
+	balloon7 = new Model(&shader, "models/Balloon.obj", "models/");
+	balloon8 = new Model(&shader, "models/Balloon.obj", "models/");
+	balloon9 = new Model(&shader, "models/Balloon.obj", "models/");
+	balloon10 = new Model(&shader, "models/Balloon.obj", "models/");
 
 	rnd = new Model(&shader, "models/shpere.obj", "models/");
 

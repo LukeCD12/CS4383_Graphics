@@ -14,7 +14,7 @@ public:
 	float rate;
 	float size;
 	glm::vec3 pos;
-	void updatePos(float y);
+	void updatePos(float y, int difficulty);
 	bool isShot(glm::vec3 pos, glm::vec3 lookat);
 private:
 	float MAX_Y_POS = 8.0f;
