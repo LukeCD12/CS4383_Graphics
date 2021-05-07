@@ -26,7 +26,7 @@ void Balloon::updatePos(float y) {
 	}
 }
 
-void Balloon::isShot(glm::vec3 cam, glm::vec3 lookat) {
+bool Balloon::isShot(glm::vec3 cam, glm::vec3 lookat) {
 	glm::vec3 dir = lookat - cam;
 	float len = glm::length(dir);
 	glm::vec3 far = (dir / len) * 100.0f;
@@ -35,5 +35,7 @@ void Balloon::isShot(glm::vec3 cam, glm::vec3 lookat) {
 	printf("distance: %lf\n", distance);
 	if (distance < 1.5f * size) {
 		initBalloon();
+		return true;
 	}
+	return false;
 }

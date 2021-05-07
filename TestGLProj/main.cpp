@@ -40,6 +40,7 @@ float rotation = 0.0f;
 float mtime = 0.0f;
 float lastTime = 0.0f;
 bool shoot = false;
+int score = 0;
 
 QuatCamera *camera;
 
@@ -99,13 +100,22 @@ void dumpInfo(void) {
 
 void display(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	//output score to screen
+	unsigned char str[] = "Score: 9999999999999";
+	sprintf((char *)str, "Score: %d", score);
+	glRasterPos2f(-1.0f, -1.0f);
+	for (unsigned char* c = str; *c != '\0'; c++) {
+		glutBitmapCharacter(GLUT_BITMAP_8_BY_13, *c);
+	}
+
 	camera->OnRender();
 
 	view = glm::lookAt(camera->GetPos(), camera->GetLookAtPoint(), camera->GetUp());
 	
 	glm::vec4 lightPos = glm::rotate(rotation,0.0f, 0.0f, 1.0f) * lightPosition;
 	
-	shader.Activate(); // Bind shader.
+	shader.Activate();
 	shader.SetUniform("lightPosition", view * lightPos);
 	shader.SetUniform("lightDiffuse", glm::vec4(1.0, 1.0, 1.0, 1.0));
 	shader.SetUniform("lightSpecular", glm::vec4(1.0, 1.0, 1.0, 1.0));
@@ -114,9 +124,10 @@ void display(void) {
 
 	water.Activate();
 	water.SetUniform("time", mtime);
+	
 
 	//front banner
-	banner->render(view * glm::translate(0.0f, 3.0f, -0.8f) * glm::rotate(90.0f, 1.0f, 0.0f, 0.0f) * glm::scale(7.0f, 1.0f, 1.0f), projection, false);
+	//banner->render(view * glm::translate(0.0f, 3.0f, -0.8f) * glm::rotate(90.0f, 1.0f, 0.0f, 0.0f) * glm::scale(7.0f, 1.0f, 1.0f), projection, false);
 
 	//left front post
 	pole->render(view * glm::translate(8.0f, -3.0f, 0.0f) * glm::scale(1.0f, 7.0f, 1.0f), projection, false);
@@ -180,7 +191,6 @@ void idle() {
 	glutPostRedisplay();
 }
 
-
 void reshape(int w, int h) {
 	glViewport(0, 0, (GLsizei) w, (GLsizei) h);
 	checkError("reshape");
@@ -207,7 +217,9 @@ void pew(int x, int y) {
 	glm::vec3 pos = camera->GetPos();
 	glm::vec3 lookat = camera->GetLookAtPoint();
 	for (auto curr : balloons) {
-		curr->isShot(pos, lookat);
+		if (curr->isShot(pos, lookat)) {
+			score++;
+		}
 	}
 	printf("-----------------------------------\n");
 }
