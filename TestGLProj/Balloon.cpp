@@ -2,6 +2,7 @@
 
 Balloon::Balloon() {
 	initBalloon();
+	missed = 0;
 }
 
 void Balloon::initBalloon() {
@@ -27,6 +28,7 @@ void Balloon::updatePos(float y, int difficulty) {
 	difficulty += 1;
 	pos.y = pos.y + y * rate * difficulty;
 	if (pos.y > MAX_Y_POS) {
+		missed++;
 		initBalloon();
 	}
 }

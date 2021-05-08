@@ -41,6 +41,7 @@ int score = 0;
 int difficulty = 0;
 bool d1 = true;
 bool d2 = true;
+int lives = 5;
 
 QuatCamera *camera;
 
@@ -99,6 +100,15 @@ void dumpInfo(void) {
 
 void display(void) {
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	//output lives to screen
+	unsigned char livesStr[] = "Lives: 5";
+	sprintf((char*)livesStr, "Lives: %d", lives);
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glRasterPos2f(0.575f, 0.76f);
+	for (unsigned char* c = livesStr; *c != '\0'; c++) {
+		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
+	}
 
 	//output score to screen
 	unsigned char scoreStr[] = "Score: 9999999999999";
@@ -249,6 +259,20 @@ void display(void) {
 	plane->setOverrideEmissiveMaterial(glm::vec4(0.0, 0.0, 0.0, 1.0));
 	plane->render(view * glm::translate(0.0f, -6.0f, 0.0f) * glm::scale(20.0f, 20.0f, 20.0f), projection, false);
 
+	if (difficulty == 0) {
+		lives = 5 - (b1->missed + b2->missed + b3->missed + b4->missed + b5->missed);
+	}
+	else if (difficulty == 1) {
+		lives = 5 - (b1->missed + b2->missed + b3->missed + b4->missed + b5->missed + b6->missed + b7->missed);
+	}
+	else { //difficult == 2
+		lives = 5 - (b1->missed + b2->missed + b3->missed + b4->missed + b5->missed + b6->missed + b7->missed + b8->missed + b9->missed + b10->missed);
+	}
+
+	if (lives  < 1) {
+		exit(0);
+	}
+
 	glutSwapBuffers(); // Swap the buffers.
 	checkError ("display");
 }
@@ -309,7 +333,7 @@ void pew(int x, int y) {
 			score++;
 		}
 	}
-	printf("num balloons: %d\n", balloons.size());
+	printf("num balloons: %d\nlives left: %d", balloons.size(), lives);
 	printf("-----------------------------------\n");
 }
 
