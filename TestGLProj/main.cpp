@@ -17,17 +17,16 @@
 #include <string.h>
 
 Shader shader;
-Shader water;
 
 Model *plane;
-Model *gun, *balloon1, *balloon2, *balloon3, *balloon4, *balloon5, * balloon6, * balloon7, * balloon8, * balloon9, * balloon10;
+Model *gun, *balloon1, *balloon2, *balloon3, *balloon4, *balloon5;
 Model *stall;
-Model *structure, *pole;
+Model* structure;
+Model *post, *woodwall;
 Model *rnd;
-Model *banner;
 
 std::vector<Balloon *> balloons;
-Balloon *b1, *b2, *b3, *b4, *b5, *b6, *b7, *b8, *b9, *b10;
+Balloon *b1, *b2, *b3, *b4, *b5;
 
 glm::mat4 projection;
 glm::mat4 view;
@@ -37,11 +36,8 @@ glm::vec3 pewDir;
 glm::mat4 pewModel;
 
 float rotation = 0.0f;
-float mtime = 0.0f;
-float lastTime = 0.0f;
+
 bool shoot = false;
-int score = 0;
-int difficulty = 0;
 
 QuatCamera *camera;
 
@@ -54,7 +50,6 @@ void checkError(const char *functionName) {
 }
 
 void initShader(void) {
-	water.InitializeFromFile("shaders/water.vert", "shaders/water.frag");
 	shader.InitializeFromFile("shaders/phong3.vert", "shaders/phong3.frag");
 	checkError("initShader");
 }
@@ -88,7 +83,7 @@ void init(void)  {
 	balloons.push_back(b5);
 
 	initShader();
-	initRendering();
+	initRendering ();
 }
 
 void dumpInfo(void) {
@@ -100,76 +95,40 @@ void dumpInfo(void) {
 }
 
 void display(void) {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	//output score to screen
-	unsigned char scoreStr[] = "Score: 9999999999999";
-	sprintf((char *)scoreStr, "Score: %d", score);
-	glColor3f(1.0f, 1.0f, 1.0f);
-	glRasterPos2f(0.6f, 0.85f);
-	for (unsigned char* c = scoreStr; *c != '\0'; c++) {
-		glutBitmapCharacter(GLUT_BITMAP_8_BY_13, *c);
-	}
-
-	//output difficulty to screen
-	unsigned char difficultyStr[] = "Difficulty: Medium";
-	switch (difficulty) {
-		case 0:
-			glColor3f(0.0f, 1.0f, 0.0f);
-			sprintf((char*)difficultyStr, "Difficulty: Easy");
-			break;
-		case 1:
-			glColor3f(1.0f, 1.0f, 0.0f);
-			sprintf((char*)difficultyStr, "Difficulty: Medium");
-			break;
-		case 2:
-			sprintf((char*)difficultyStr, "Difficulty: Hard");
-			glColor3f(1.0f, 0.0f, 0.0f);
-			break;
-	}
-	glRasterPos2f(0.6f, 0.9f);
-	for (unsigned char* c = difficultyStr; *c != '\0'; c++) {
-		glutBitmapCharacter(GLUT_BITMAP_8_BY_13, *c);
-	}
-
+	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	camera->OnRender();
 
 	view = glm::lookAt(camera->GetPos(), camera->GetLookAtPoint(), camera->GetUp());
 	
-	glm::vec4 lightPos = glm::rotate(rotation,0.0f, 0.0f, 1.0f) * lightPosition;
+	// rotation += 0.05f; // Update rotation angle if rotation is enabled.
 	
-	shader.Activate();
+	 glm::vec4 lightPos = glm::rotate(rotation,0.0f, 0.0f, 1.0f) * lightPosition;
+	
+	shader.Activate(); // Bind shader.
 	shader.SetUniform("lightPosition", view * lightPos);
 	shader.SetUniform("lightDiffuse", glm::vec4(1.0, 1.0, 1.0, 1.0));
 	shader.SetUniform("lightSpecular", glm::vec4(1.0, 1.0, 1.0, 1.0));
 	shader.SetUniform("lightAmbient", glm::vec4(1.0, 1.0, 1.0, 1.0));
-	shader.SetUniform("linearAttenuationCoefficient", 0.3f);
-
-	water.Activate();
-	water.SetUniform("time", mtime);
-	
-
-	//front banner
-	//banner->render(view * glm::translate(0.0f, 3.0f, -0.8f) * glm::rotate(90.0f, 1.0f, 0.0f, 0.0f) * glm::scale(7.0f, 1.0f, 1.0f), projection, false);
+	shader.SetUniform("linearAttenuationCoefficient", 0.1f);
 
 	//left front post
-	pole->render(view * glm::translate(8.0f, -3.0f, 0.0f) * glm::scale(1.0f, 7.0f, 1.0f), projection, false);
+	post->render(view * glm::translate(7.6f, -3.0f, 0.5f) * glm::scale(4.0f, 4.5f, 4.0f), projection, true);
 	//right front post
-	pole->render(view * glm::translate(-8.0f, -3.0f, 0.0f) * glm::scale(1.0f, 7.0f, 1.0f), projection, false);
-	//front counter
-	structure->render(view * glm::translate(0.0f, -6.0f, 0.0f) * glm::scale(7.5f, 3.0f, 0.7f), projection, true);
-	//right wall
-	structure->render(view * glm::translate(-8.0f, -6.0f, 9.0f) * glm::scale(0.7f, 3.0f, 9.0f), projection, false);
-	//left wall
-	structure->render(view * glm::translate(8.0f, -6.0f, 9.0f) * glm::scale(0.7f, 3.0f, 9.0f), projection, false);
+	post->render(view * glm::translate(-7.6f, -3.0f, 0.5f) * glm::scale(4.0f, 4.5f, 4.0f), projection, true);
 	//back wall
-	structure->render(view * glm::translate(0.0f, -4.0f, 17.3f) * glm::scale(8.5f, 8.0f, 0.7f), projection, true);
+	woodwall->render(view * glm::translate(0.0f, -1.0f, 17.3f) * glm::scale(6.0f, 4.0f, 5.0f) * glm::rotate(90.0f, 1.0f, 0.0f, 0.0f) * glm::rotate(90.0f, 0.0f, 1.0f, 0.0f), projection, true);
+	//front counter
+	woodwall->render(view * glm::translate(0.0f, -7.2f, 0.5f) * glm::scale(6.0f, 4.0f, 5.0f) * glm::rotate(-90.0f, 1.0f, 0.0f, 0.0f) * glm::rotate(90.0f, 0.0f, 1.0f, 0.0f), projection, true);
+	//right wall
+	post->render(view * glm::translate(7.7f, -4.5f, 10.0f) * glm::scale(4.0f, 9.0f, 6.0f) * glm::rotate(90.0f, 1.0f, 0.0f, 0.0f), projection, true);
+	//left wall
+	post->render(view * glm::translate(-7.7f, -4.5f, 10.0f) * glm::scale(4.0f, 9.0f, 6.0f) * glm::rotate(90.0f, 1.0f, 0.0f, 0.0f), projection, true);
 	//roof
-	structure->render(view * glm::translate(0.0f, 3.75f, 0.0f) * glm::scale(7.5f, 0.2f, 0.7f), projection, false);
+	post->render(view * glm::translate(0.0f, 3.75f, 0.0f) * glm::scale(5.8f, 4.0f, 4.0f) * glm::rotate(90.0f, 0.0f, 0.0f, 1.0f), projection, true);
 	//left roof
-	structure->render(view * glm::translate(8.0f, 3.75f, 9.0f) * glm::scale(0.7f, 0.2f, 9.0f), projection, false);
+	post->render(view * glm::translate(7.7f, 3.0f, 10.0f) * glm::scale(4.0f, 4.0f, 6.0f) * glm::rotate(90.0f, 1.0f, 0.0f, 0.0f), projection, true);
 	//right roof
-	structure->render(view * glm::translate(-8.0f, 3.75f, 9.0f) * glm::scale(0.7f, 0.2f, 9.0f), projection, false);
+	post->render(view * glm::translate(-7.7f, 3.0f, 10.0f) * glm::scale(4.0f, 4.0f, 6.0f) * glm::rotate(90.0f, 1.0f, 0.0f, 0.0f), projection, true);
 
 	//left stall
 	stall->render(view * glm::translate(14.5f, -5.5f, 6.0f) * glm::scale(60.0f, 65.0f, 135.0f), projection, true);
@@ -178,39 +137,37 @@ void display(void) {
 
 	gun->render(glm::translate(0.75f,-1.0f,-2.0f)* glm::scale(.05f, .05f, .05f) *glm::rotate(-180.0f,0.0f,1.0f,0.0f) , projection, true);
 	
-	b1->updatePos(0.0025f, difficulty);
-	balloon1->render(view * glm::translate(b1->pos) * glm::scale(b1->size, b1->size, b1->size), projection, true);
+	b1->updatePos(0.0025f);
+	balloon1->render(view * glm::translate(b1->pos) * glm::scale(b1->size, b1->size, b1->size), projection, false);
 
-	b2->updatePos(0.0025f, difficulty);
-	balloon2->render(view * glm::translate(b2->pos) * glm::scale(b2->size, b2->size, b2->size), projection, true);
+	b2->updatePos(0.0025f);
+	balloon2->render(view * glm::translate(b2->pos) * glm::scale(b2->size, b2->size, b2->size), projection, false);
 
-	b3->updatePos(0.0025f, difficulty);
-	balloon3->render(view * glm::translate(b3->pos) * glm::scale(b3->size, b3->size, b3->size), projection, true);
+	b3->updatePos(0.0025f);
+	balloon3->render(view * glm::translate(b3->pos) * glm::scale(b3->size, b3->size, b3->size), projection, false);
 
-	b4->updatePos(0.0025f, difficulty);
-	balloon4->render(view * glm::translate(b4->pos) * glm::scale(b4->size, b4->size, b4->size), projection, true);
+	b4->updatePos(0.0025f);
+	balloon4->render(view * glm::translate(b4->pos) * glm::scale(b4->size, b4->size, b4->size), projection, false);
 
-	b5->updatePos(0.0025f, difficulty);
-	balloon5->render(view * glm::translate(b5->pos) * glm::scale(b5->size, b5->size, b5->size), projection, true);
+	b5->updatePos(0.0025f);
+	balloon5->render(view * glm::translate(b5->pos) * glm::scale(b5->size, b5->size, b5->size), projection, false);
 
-	if (difficulty >= 1) {
-		b6->updatePos(0.0025f, difficulty);
-		balloon6->render(view * glm::translate(b6->pos) * glm::scale(b6->size, b6->size, b6->size), projection, true);
+	balloon1->setOverrideDiffuseMaterial(glm::vec4(1.0, 0.0, 0.0, 1.0));
+	balloon2->setOverrideDiffuseMaterial(glm::vec4(0.0, 1.0, 0.0, 1.0));
+	balloon3->setOverrideDiffuseMaterial(glm::vec4(0.0, 0.0, 1.0, 1.0));
+	balloon4->setOverrideDiffuseMaterial(glm::vec4(1.0, 1.0, 0.0, 1.0));
+	balloon5->setOverrideDiffuseMaterial(glm::vec4(1.0, 0.0, 1.0, 1.0));
 
-		b7->updatePos(0.0025f, difficulty);
-		balloon7->render(view * glm::translate(b7->pos) * glm::scale(b7->size, b7->size, b7->size), projection, true);
-	}
-
-	if (difficulty >= 2) {
-		b8->updatePos(0.0025f, difficulty);
-		balloon8->render(view * glm::translate(b8->pos) * glm::scale(b8->size, b8->size, b8->size), projection, true);
-
-		b9->updatePos(0.0025f, difficulty);
-		balloon9->render(view * glm::translate(b9->pos) * glm::scale(b9->size, b9->size, b9->size), projection, true);
-
-		b10->updatePos(0.0025f, difficulty);
-		balloon10->render(view* glm::translate(b10->pos)* glm::scale(b10->size, b10->size, b10->size), projection, true);
-	}
+	balloon1->setOverrideSpecularMaterial(glm::vec4(1.0, 1.0, 1.0, 1.0));
+	balloon1->setOverrideSpecularShininessMaterial(300.0f);
+	balloon2->setOverrideSpecularMaterial(glm::vec4(1.0, 1.0, 1.0, 1.0));
+	balloon2->setOverrideSpecularShininessMaterial(300.0f);
+	balloon3->setOverrideSpecularMaterial(glm::vec4(1.0, 1.0, 1.0, 1.0));
+	balloon3->setOverrideSpecularShininessMaterial(300.0f);
+	balloon4->setOverrideSpecularMaterial(glm::vec4(1.0, 1.0, 1.0, 1.0));
+	balloon4->setOverrideSpecularShininessMaterial(300.0f);
+	balloon5->setOverrideSpecularMaterial(glm::vec4(1.0, 1.0, 1.0, 1.0));
+	balloon5->setOverrideSpecularShininessMaterial(300.0f);
 
 	plane->setOverrideDiffuseMaterial(glm::vec4(1.0, 0.0, 0.0, 1.0));
 	plane->setOverrideAmbientMaterial(glm::vec4(0.2 , 0.0, 0.0, 1.0));
@@ -220,35 +177,13 @@ void display(void) {
 	plane->render(view * glm::translate(0.0f, -6.0f, 0.0f) * glm::scale(20.0f, 20.0f, 20.0f), projection, false);
 
 	glutSwapBuffers(); // Swap the buffers.
-	checkError("display");
+	checkError ("display");
 }
 
 void idle() {
-	float currTime = glutGet(GLUT_ELAPSED_TIME);
-	int sec = (int)currTime / 1000;
-	if (sec == 60) {
-		difficulty = 1;
-		b6 = new Balloon();
-		b7 = new Balloon();
-		balloons.push_back(b6);
-		balloons.push_back(b7);
-	}
-	else if (sec == 120) {
-		difficulty = 2;
-		b8 = new Balloon();
-		b9 = new Balloon();
-		b10 = new Balloon();
-		balloons.push_back(b8);
-		balloons.push_back(b9);
-		balloons.push_back(b10);
-	}
-	if (currTime - lastTime > 1.0f) {
-		mtime = currTime;
-		lastTime = currTime;
-	}
-	glFlush();
 	glutPostRedisplay();
 }
+
 
 void reshape(int w, int h) {
 	glViewport(0, 0, (GLsizei) w, (GLsizei) h);
@@ -276,9 +211,7 @@ void pew(int x, int y) {
 	glm::vec3 pos = camera->GetPos();
 	glm::vec3 lookat = camera->GetLookAtPoint();
 	for (auto curr : balloons) {
-		if (curr->isShot(pos, lookat)) {
-			score++;
-		}
+		curr->isShot(pos, lookat);
 	}
 	printf("-----------------------------------\n");
 }
@@ -320,22 +253,17 @@ int main(int argc, char** argv) {
 	balloon3 = new Model(&shader, "models/Balloon.obj", "models/");
 	balloon4 = new Model(&shader, "models/Balloon.obj", "models/");
 	balloon5 = new Model(&shader, "models/Balloon.obj", "models/");
-	balloon6 = new Model(&shader, "models/Balloon.obj", "models/");
-	balloon7 = new Model(&shader, "models/Balloon.obj", "models/");
-	balloon8 = new Model(&shader, "models/Balloon.obj", "models/");
-	balloon9 = new Model(&shader, "models/Balloon.obj", "models/");
-	balloon10 = new Model(&shader, "models/Balloon.obj", "models/");
 
 	rnd = new Model(&shader, "models/shpere.obj", "models/");
 
 	stall = new Model(&shader, "models/stall.obj", "models/");
 
 	plane = new Model(&shader,"models/plane.obj",  "models/");
-	banner = new Model(&water, "models/planehires.obj");
 	gun = new Model(&shader,"models/pistola.obj", "models/");
 
 	structure = new Model(&shader, "models/cubeaxisaligned.obj", "models/");
-	pole = new Model(&shader, "models/cylinder.obj", "models/");
+	woodwall = new Model(&shader, "models/woodwall.obj", "models/");
+	post = new Model(&shader, "models/post.obj", "models/");
 
 	glutMainLoop();
 

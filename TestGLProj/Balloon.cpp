@@ -19,15 +19,14 @@ void Balloon::initBalloon() {
 	popped = false;
 }
 
-void Balloon::updatePos(float y, int difficulty) {
-	difficulty += 1;
-	pos.y = pos.y + y * rate * difficulty;
+void Balloon::updatePos(float y) {
+	pos.y = pos.y + y * rate;
 	if (pos.y > MAX_Y_POS) {
 		initBalloon();
 	}
 }
 
-bool Balloon::isShot(glm::vec3 cam, glm::vec3 lookat) {
+void Balloon::isShot(glm::vec3 cam, glm::vec3 lookat) {
 	glm::vec3 dir = lookat - cam;
 	float len = glm::length(dir);
 	glm::vec3 far = (dir / len) * 100.0f;
@@ -36,7 +35,5 @@ bool Balloon::isShot(glm::vec3 cam, glm::vec3 lookat) {
 	printf("distance: %lf\n", distance);
 	if (distance < 1.5f * size) {
 		initBalloon();
-		return true;
 	}
-	return false;
 }

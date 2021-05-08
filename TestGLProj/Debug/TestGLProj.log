@@ -1,9 +1,1 @@
-﻿cl : command line warning D9035: option 'Gm' has been deprecated and will be removed in a future release
-  main.cpp
-C:\Users\Luke\Desktop\Graphics\prj\prj2\TestGLProj\main.cpp(107,2): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-C:\Users\Luke\Desktop\Graphics\prj\prj2\TestGLProj\main.cpp(119,4): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-C:\Users\Luke\Desktop\Graphics\prj\prj2\TestGLProj\main.cpp(123,4): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-C:\Users\Luke\Desktop\Graphics\prj\prj2\TestGLProj\main.cpp(126,4): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-C:\Users\Luke\Desktop\Graphics\prj\prj2\TestGLProj\main.cpp(227,17): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-main.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/SAFESEH' specification
-  TestGLProj.vcxproj -> C:\Users\Luke\Desktop\Graphics\prj\prj2\Debug\TestGLProj.exe
+﻿
