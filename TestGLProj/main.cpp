@@ -104,9 +104,9 @@ void display(void) {
 	unsigned char scoreStr[] = "Score: 9999999999999";
 	sprintf((char*)scoreStr, "Score: %d", score);
 	glColor3f(1.0f, 1.0f, 1.0f);
-	glRasterPos2f(0.6f, 0.85f);
+	glRasterPos2f(0.575f, 0.83f);
 	for (unsigned char* c = scoreStr; *c != '\0'; c++) {
-		glutBitmapCharacter(GLUT_BITMAP_8_BY_13, *c);
+		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
 	}
 
 	//output difficulty to screen
@@ -125,9 +125,9 @@ void display(void) {
 		glColor3f(1.0f, 0.0f, 0.0f);
 		break;
 	}
-	glRasterPos2f(0.6f, 0.9f);
+	glRasterPos2f(0.575f, 0.9f);
 	for (unsigned char* c = difficultyStr; *c != '\0'; c++) {
-		glutBitmapCharacter(GLUT_BITMAP_8_BY_13, *c);
+		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
 	}
 
 
