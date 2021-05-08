@@ -146,6 +146,8 @@ void display(void) {
 	shader.SetUniform("lightAmbient", glm::vec4(1.0, 1.0, 1.0, 1.0));
 	shader.SetUniform("linearAttenuationCoefficient", 0.1f);
 
+	//render solid objects
+
 	//left front post
 	post->render(view * glm::translate(7.6f, -3.0f, 0.5f) * glm::scale(4.0f, 4.5f, 4.0f), projection, true);
 	//right front post
@@ -172,21 +174,51 @@ void display(void) {
 
 	gun->render(glm::translate(0.75f,-1.0f,-2.0f)* glm::scale(.05f, .05f, .05f) *glm::rotate(-180.0f,0.0f,1.0f,0.0f) , projection, true);
 	
+	//ground
+	plane->setOverrideDiffuseMaterial(glm::vec4(1.0, 0.0, 0.0, 1.0));
+	plane->setOverrideAmbientMaterial(glm::vec4(0.2, 0.0, 0.0, 1.0));
+	plane->setOverrideSpecularMaterial(glm::vec4(1.0, 1.0, 1.0, 1.0));
+	plane->setOverrideSpecularShininessMaterial(90.0f);
+	plane->setOverrideEmissiveMaterial(glm::vec4(0.0, 0.0, 0.0, 1.0));
+	plane->render(view * glm::translate(0.0f, -6.0f, 0.0f) * glm::scale(20.0f, 20.0f, 20.0f), projection, false);
+
+	//draw remaining objects with alpha values
+	glEnable(GL_BLEND);
+	glDepthMask(GL_FALSE);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	//easy mode, initialize balloons 1-5
 	b1->updatePos(0.0025f, difficulty);
 	balloon1->render(view * glm::translate(b1->pos) * glm::scale(b1->size, b1->size, b1->size), projection, false);
+	balloon1->setOverrideDiffuseMaterial(b1->color);
+	balloon1->setOverrideSpecularMaterial(glm::vec4(1.0, 1.0, 1.0, 1.0));
+	balloon1->setOverrideSpecularShininessMaterial(300.0f);
 
 	b2->updatePos(0.0025f, difficulty);
 	balloon2->render(view * glm::translate(b2->pos) * glm::scale(b2->size, b2->size, b2->size), projection, false);
+	balloon2->setOverrideDiffuseMaterial(b2->color);
+	balloon2->setOverrideSpecularMaterial(glm::vec4(1.0, 1.0, 1.0, 1.0));
+	balloon2->setOverrideSpecularShininessMaterial(300.0f);
 
 	b3->updatePos(0.0025f, difficulty);
 	balloon3->render(view * glm::translate(b3->pos) * glm::scale(b3->size, b3->size, b3->size), projection, false);
+	balloon3->setOverrideDiffuseMaterial(b3->color);
+	balloon3->setOverrideSpecularMaterial(glm::vec4(1.0, 1.0, 1.0, 1.0));
+	balloon3->setOverrideSpecularShininessMaterial(300.0f);
 
 	b4->updatePos(0.0025f, difficulty);
 	balloon4->render(view * glm::translate(b4->pos) * glm::scale(b4->size, b4->size, b4->size), projection, false);
+	balloon4->setOverrideDiffuseMaterial(b4->color);
+	balloon4->setOverrideSpecularMaterial(glm::vec4(1.0, 1.0, 1.0, 1.0));
+	balloon4->setOverrideSpecularShininessMaterial(300.0f);
 
 	b5->updatePos(0.0025f, difficulty);
 	balloon5->render(view * glm::translate(b5->pos) * glm::scale(b5->size, b5->size, b5->size), projection, false);
+	balloon5->setOverrideDiffuseMaterial(b5->color);
+	balloon5->setOverrideSpecularMaterial(glm::vec4(1.0, 1.0, 1.0, 1.0));
+	balloon5->setOverrideSpecularShininessMaterial(300.0f);
 
+	//medium mode
 	if (difficulty >= 1) {
 		b6->updatePos(0.0025f, difficulty);
 		balloon6->render(view * glm::translate(b6->pos) * glm::scale(b6->size, b6->size, b6->size), projection, true);
@@ -203,6 +235,7 @@ void display(void) {
 		balloon7->setOverrideSpecularShininessMaterial(300.0f);
 	}
 
+	//hard mode
 	if (difficulty >= 2) {
 		b8->updatePos(0.0025f, difficulty);
 		balloon8->render(view * glm::translate(b8->pos) * glm::scale(b8->size, b8->size, b8->size), projection, true);
@@ -225,29 +258,9 @@ void display(void) {
 		balloon10->setOverrideSpecularShininessMaterial(300.0f);
 	}
 
-	balloon1->setOverrideDiffuseMaterial(b1->color);
-	balloon2->setOverrideDiffuseMaterial(b2->color);
-	balloon3->setOverrideDiffuseMaterial(b3->color);
-	balloon4->setOverrideDiffuseMaterial(b4->color);
-	balloon5->setOverrideDiffuseMaterial(b5->color);
-
-	balloon1->setOverrideSpecularMaterial(glm::vec4(1.0, 1.0, 1.0, 1.0));
-	balloon1->setOverrideSpecularShininessMaterial(300.0f);
-	balloon2->setOverrideSpecularMaterial(glm::vec4(1.0, 1.0, 1.0, 1.0));
-	balloon2->setOverrideSpecularShininessMaterial(300.0f);
-	balloon3->setOverrideSpecularMaterial(glm::vec4(1.0, 1.0, 1.0, 1.0));
-	balloon3->setOverrideSpecularShininessMaterial(300.0f);
-	balloon4->setOverrideSpecularMaterial(glm::vec4(1.0, 1.0, 1.0, 1.0));
-	balloon4->setOverrideSpecularShininessMaterial(300.0f);
-	balloon5->setOverrideSpecularMaterial(glm::vec4(1.0, 1.0, 1.0, 1.0));
-	balloon5->setOverrideSpecularShininessMaterial(300.0f);
-
-	plane->setOverrideDiffuseMaterial(glm::vec4(1.0, 0.0, 0.0, 1.0));
-	plane->setOverrideAmbientMaterial(glm::vec4(0.2 , 0.0, 0.0, 1.0));
-	plane->setOverrideSpecularMaterial(glm::vec4(1.0, 1.0, 1.0, 1.0));
-	plane->setOverrideSpecularShininessMaterial(90.0f);
-	plane->setOverrideEmissiveMaterial(glm::vec4(0.0, 0.0, 0.0, 1.0));
-	plane->render(view * glm::translate(0.0f, -6.0f, 0.0f) * glm::scale(20.0f, 20.0f, 20.0f), projection, false);
+	//disable blending
+	glDepthMask(GL_TRUE);
+	glDisable(GL_BLEND);
 
 	glutSwapBuffers(); // Swap the buffers.
 	checkError ("display");
