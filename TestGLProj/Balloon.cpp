@@ -18,7 +18,7 @@ void Balloon::initBalloon() {
 	std::uniform_real_distribution<double> b(0.0, std::nextafter(1.0, DBL_MAX));
 
 	pos = glm::vec3((float)x(mt), -9.5f, (float)z(mt));
-	color = glm::vec4((float)r(mt), (float)g(mt), (float)b(mt), 1.0f);
+	color = glm::vec4((float)r(mt), (float)g(mt), (float)b(mt), 1.9f);
 	size = (float)scale(mt);
 	rate = (float)speed(mt);
 	popped = false;
