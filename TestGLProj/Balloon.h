@@ -13,6 +13,7 @@ public:
 	bool popped;
 	float rate;
 	float size;
+	glm::vec4 color;
 	glm::vec3 pos;
 	void updatePos(float y, int difficulty);
 	bool isShot(glm::vec3 pos, glm::vec3 lookat);
