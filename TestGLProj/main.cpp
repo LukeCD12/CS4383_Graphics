@@ -333,8 +333,8 @@ void pew(int x, int y) {
 			score++;
 		}
 	}
-	printf("num balloons: %d\nlives left: %d", balloons.size(), lives);
-	printf("-----------------------------------\n");
+	//printf("num balloons: %d\nlives left: %d", balloons.size(), lives);
+	//printf("-----------------------------------\n");
 }
 
 static void mouse(int button, int state, int x, int y) {

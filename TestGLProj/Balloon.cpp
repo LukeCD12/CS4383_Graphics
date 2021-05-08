@@ -39,7 +39,7 @@ bool Balloon::isShot(glm::vec3 cam, glm::vec3 lookat) {
 	glm::vec3 far = (dir / len) * 100.0f;
 	glm::vec3 pt = glm::closestPointOnLine(pos, cam, far);
 	float distance = glm::distance(pt, pos);
-	printf("distance: %lf\n", distance);
+	//printf("distance: %lf\n", distance);
 	if (distance < 1.5f * size) {
 		initBalloon();
 		return true;
