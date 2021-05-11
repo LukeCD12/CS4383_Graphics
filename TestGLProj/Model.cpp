@@ -3,6 +3,11 @@
 #include <gli/gli.hpp>
 #include <gli/gtx/gl_texture2d.hpp>
 
+//assimp lib
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
 std::map<std::string, GLuint> Model::textureManager;
 Model::Model(Shader *shader,  const char* filename, const char* materialPath)
 {
@@ -222,3 +227,29 @@ struct Model::Box Model::calculateAABB()
 	Box box = {minX, minY, minZ, maxX, maxY, maxZ};
 	return box;
 }
+/*
+class Model {
+public:
+	glm::vec3 position;
+	glm::vec3 size;
+
+	Model();
+	Model(glm::vec3 pos = glm::vec3(0.0f), glm::vec3 size = glm::vec3(1.0f));
+
+	void init();
+	void loadModel(std::string path);
+	void render(Shader shader);
+	void cleanup();
+
+protected:
+	std::vector<Mesh> meshes;
+	std::string directory;
+
+	std::vector<Texture> textures_loaded;
+
+	void processNode(aiNode* node, aiScene* scene);
+	Mesh processMesh(aiMesh* mesh, aiScene* scene);
+
+	std::vector<Texture> loadTextures(aiMaterial* mat, aiTextureType type);
+};
+*/
